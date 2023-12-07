@@ -33,11 +33,7 @@ with open('sankey_dict.pkl', 'rb') as f:
 value = "Value"
 value_suffix = "tonnes"  # Specify (if any) a suffix for the value
 
-# Step 3. Set the plot's title
-title = "Soy flows"
-
 # Step 4. (Optional) Customize layout, font, and colors
-width, height = 700, 500  # Set plot's width and height
 fontsize = 14  # Set font size of labels
 fontfamily = "Helvetica"  # Set font family of plot's text
 bgcolor = "SeaShell"  # Set the plot's background color (use color name or hex code)
