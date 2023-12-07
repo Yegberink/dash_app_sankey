@@ -53,14 +53,14 @@ server = app.server
 
 # Define the layout of the app
 app.layout = html.Div([
-    html.H1("Sankey Diagram"),
+    html.H1("Soy Flows in the EU", style={'text-align': 'center', 'font-family': 'Helvetica'}),
     html.Div([
         # Dropdown for selecting a year
         dcc.Dropdown(
             id='year-dropdown',
             options=[{'label': str(year), 'value': year} for year in range(2010, 2022)],
             value=2010,  # Default selected year
-            style={'margin-bottom': '10px', 'width': '50%'}
+            style={'margin-bottom': '10px', 'width': '50%', 'font-family': 'Helvetica'}
         ),
 
         dcc.RadioItems(
@@ -70,10 +70,11 @@ app.layout = html.Div([
                     ],
                     value='FAO',
                     id='data-source-radio'
-                )], style={'display': 'flex'}
+                )], style={'display': 'flex', 'font-family': 'Helvetica'}
     ),
     # Sankey diagram
-    dcc.Graph(id='sankey-diagram')
+    dcc.Graph(id='sankey-diagram',
+             style={'height': '80vh', 'width': '100%'})
 ])
 
 # Define callback to update the Sankey diagram based on the selected year
@@ -142,11 +143,8 @@ def update_sankey_diagram(selected_year, selected_source_type):
 
     # Customize plot based on earlier values
     fig.update_layout(
-        title_text=title,
         font_size=fontsize,
         font_family=fontfamily,
-        width=width,
-        height=height,
         paper_bgcolor=bgcolor,
         title={"y": 0.9, "x": 0.5, "xanchor": "center", "yanchor": "top"},  # Centers title
     )
