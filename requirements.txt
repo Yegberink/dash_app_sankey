@@ -5,5 +5,4 @@ gunicorn
 openpyxl
 dash_bootstrap_components
 matplotlib
-pickle
 numpy
