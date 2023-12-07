@@ -49,7 +49,7 @@ node_colors = px.colors.qualitative.G10  # Define a list of hex color codes for 
 # Set up the Dash app
 app = dash.Dash(__name__)
 
-server = server.app
+server = app.server
 
 # Define the layout of the app
 app.layout = html.Div([
