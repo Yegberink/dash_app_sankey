@@ -54,32 +54,37 @@ app.layout = html.Div([
         dcc.Dropdown(
             id='year-dropdown',
             options=[{'label': str(year), 'value': year} for year in range(2010, 2022)],
-            value=2010,  # Default selected year
+            value=2020,  # Default selected year
             style={'margin-bottom': '10px', 'width': '50%', 'font-family': 'Helvetica'}
         ),
 
         dcc.RadioItems(
                     options=[
-                        {'label': 'FAO data', 'value': 'FAO'},
-                        {'label': 'FAO and Eurostat data', 'value': 'eurostat'}
+                        {'label': 'Without import source', 'value': 'FAO'},
+                        {'label': 'With import source', 'value': 'Eurostat and FAO'}
                     ],
-                    value='FAO',
+                    value='Eurostat and FAO',
                     id='data-source-radio'
                 )], style={'display': 'flex', 'font-family': 'Helvetica'}
     ),
+    
+    #Data source
+    html.Div(id='data-source-output', style={'text-align': 'right', 'font-style': 'italic', 'margin-top': '10px'}),    
+
     # Sankey diagram
     dcc.Graph(id='sankey-diagram',
-             style={'height': '80vh', 'width': '100%'})
+             style={'height': '80vh', 'width': '100%'}),
 ])
 
 # Define callback to update the Sankey diagram based on the selected year
 @app.callback(
-    Output('sankey-diagram', 'figure'),
+    [Output('sankey-diagram', 'figure'),
+    Output('data-source-output', 'children')],
     [Input('year-dropdown', 'value'),
      Input('data-source-radio', 'value')]
 )
 def update_sankey_diagram(selected_year, selected_source_type):
-    if selected_source_type == 'eurostat':
+    if selected_source_type == 'Eurostat and FAO':
         df = sankey_dict_eurostat[selected_year]
         cols = ["Continents", "Product", "Category"]
         value = "Value"
@@ -147,7 +152,7 @@ def update_sankey_diagram(selected_year, selected_source_type):
         title={"y": 0.9, "x": 0.5, "xanchor": "center", "yanchor": "top"},  # Centers title
     )
 
-    return fig
+    return fig, f'Data: {selected_source_type}'
 #run the app
 if __name__ == '__main__':
     app.run(jupyter_mode="external", port = 8085)
