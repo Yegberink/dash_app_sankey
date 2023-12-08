@@ -30,7 +30,6 @@ with open('sankey_dict.pkl', 'rb') as f:
 #%% static elements of the diagram
 
 # Step 2. Specify a column for the flow volume value
-value = "Value"
 value_suffix = "tonnes"  # Specify (if any) a suffix for the value
 
 # Step 4. (Optional) Customize layout, font, and colors
@@ -83,9 +82,12 @@ def update_sankey_diagram(selected_year, selected_source_type):
     if selected_source_type == 'eurostat':
         df = sankey_dict_eurostat[selected_year]
         cols = ["Continents", "Product", "Category"]
+        value = "Value"
     else:
         df = sankey_dict_FAO[selected_year]
         cols = ["Element_x", "Item", "Element_y"]
+        value = "Value for Sankey"
+
 
     s = []  # This will hold the source nodes
     t = []  # This will hold the target nodes
@@ -146,7 +148,6 @@ def update_sankey_diagram(selected_year, selected_source_type):
     )
 
     return fig
-
-# Run the app
+#run the app
 if __name__ == '__main__':
-    app.run(debug=True, port = 8056)
+    app.run(jupyter_mode="external", port = 8085)
