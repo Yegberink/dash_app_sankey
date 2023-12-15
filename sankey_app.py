@@ -50,40 +50,41 @@ server = app.server
 app.layout = html.Div([
     html.H1("Soy Flows in the EU", style={'text-align': 'center', 'font-family': 'Helvetica'}),
     html.Div([
-        # Dropdown for selecting a year
         dcc.Dropdown(
             id='year-dropdown',
             options=[{'label': str(year), 'value': year} for year in range(2010, 2022)],
-            value=2020,  # Default selected year
+            value=2020,
             style={'margin-bottom': '10px', 'width': '50%', 'font-family': 'Helvetica'}
         ),
 
         dcc.RadioItems(
-                    options=[
-                        {'label': 'Without import source', 'value': 'FAO'},
-                        {'label': 'With import source', 'value': 'Eurostat and FAO'}
-                    ],
-                    value='Eurostat and FAO',
-                    id='data-source-radio'
-                )], style={'display': 'flex', 'font-family': 'Helvetica'}
-    ),
-    
-    #Data source
-    html.Div(id='data-source-output', style={'text-align': 'right', 'font-style': 'italic', 'margin-top': '10px'}),    
+            options=[
+                {'label': 'Without import source', 'value': 'FAO'},
+                {'label': 'With import source', 'value': 'Eurostat and FAO'}
+            ],
+            value='Eurostat and FAO',
+            id='data-source-radio',
+            style={'margin-right':'20px'}
+        ),
+        dcc.Download(id="download-sankey-data"),
+        html.Button("Download Sankey Data", id="download-button", n_clicks=0, style={'position': 'absolute', 'top': '50px', 'right': '50px'})
+    ], style={'display': 'flex', 'font-family': 'Helvetica'}),
 
-    # Sankey diagram
-    dcc.Graph(id='sankey-diagram',
-             style={'height': '80vh', 'width': '100%'}),
+    html.Div(id='data-source-output', style={'text-align': 'right', 'font-style': 'italic', 'margin-top': '10px'}),
+
+    dcc.Graph(id='sankey-diagram', style={'height': '80vh', 'width': '100%'}),
 ])
 
 # Define callback to update the Sankey diagram based on the selected year
 @app.callback(
     [Output('sankey-diagram', 'figure'),
-    Output('data-source-output', 'children')],
+     Output('data-source-output', 'children'),
+     Output('download-sankey-data', 'data')],
     [Input('year-dropdown', 'value'),
-     Input('data-source-radio', 'value')]
+     Input('data-source-radio', 'value'),
+     Input('download-button', 'n_clicks')]
 )
-def update_sankey_diagram(selected_year, selected_source_type):
+def update_sankey_diagram(selected_year, selected_source_type, n_clicks):
     if selected_source_type == 'Eurostat and FAO':
         df = sankey_dict_eurostat[selected_year]
         cols = ["Continents", "Product", "Category"]
@@ -92,7 +93,6 @@ def update_sankey_diagram(selected_year, selected_source_type):
         df = sankey_dict_FAO[selected_year]
         cols = ["Element_x", "Item", "Element_y"]
         value = "Value for Sankey"
-
 
     s = []  # This will hold the source nodes
     t = []  # This will hold the target nodes
@@ -152,7 +152,13 @@ def update_sankey_diagram(selected_year, selected_source_type):
         title={"y": 0.9, "x": 0.5, "xanchor": "center", "yanchor": "top"},  # Centers title
     )
 
-    return fig, f'Data: {selected_source_type}'
+    if n_clicks > 0:
+        download_data = sankey_dict_eurostat[selected_year] if selected_source_type == 'Eurostat and FAO' else sankey_dict_FAO[selected_year]
+        download_data.to_csv("sankey_data.csv", index=False)
+        return fig, f'Data: {selected_source_type}', dict(content=download_data.to_csv(index=False), filename="sankey_data.csv")
+
+    return fig, f'Data: {selected_source_type}', None
+
 #run the app
 if __name__ == '__main__':
     app.run(jupyter_mode="external", port = 8085)
